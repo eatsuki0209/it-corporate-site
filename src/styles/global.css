@@ -1,0 +1,141 @@
+/* Global variables */
+:root {
+  /* Colors */
+  --color-background: light-dark(#F8F8F8, #2a363d);
+  --color-background-variant: light-dark(#cfdce3, #364d57);
+  --color-background-subtle: light-dark(#dee1e2, #37434b);
+  --color-on-background: light-dark(#171c1f, #fafcfd);
+  --color-on-background-variant: light-dark(#3e4f59, #cdd6da);
+
+  --color-header: light-dark(#ffffff, #404e57);
+  --color-text-field: light-dark(#ffffff, #2d3b45);
+
+  --color-footer: light-dark(#283941, #141c21);
+  --color-on-footer: light-dark(#e4f1f9, #e4f1f9);
+
+  --color-tooltip: light-dark(#283941, #dee1e2);
+  --color-on-tooltip: light-dark(#e4f1f9, #171c1f);
+
+  --color-accent: light-dark(#1e6a83, #88bdd5);
+  --color-accent-variant: light-dark(#7b2665, #ad85aa);
+  --color-on-accent: light-dark(#ffffff, #2b3a43);
+
+  --color-error: light-dark(#ca1616, #ef8b8b);
+
+  --color-outline: light-dark(#737e85, #7a929f);
+  --color-outline-variant: light-dark(#b8c0c5, #4a5961);
+
+  /* Radii */
+  --radius-small: 0.5rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.25rem;
+
+  /* Shadows */
+  --shadow-1: 0 2px 4px rgb(0 0 0 / 20%);
+  --shadow-2: 0 4px 8px rgb(0 0 0 / 20%);
+  --shadow-3: 0 4px 12px rgb(0 0 0 / 20%);
+
+  /* Font-sizes */
+  --heading-xl: clamp(3rem, 2rem + 5vw, 6rem);
+  --heading-l: clamp(2.5rem, 2.333rem + 0.83vw, 3rem);
+  --heading-m: clamp(2rem, 1.833rem + 0.83vw, 2.5rem);
+  --heading-s: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+
+  --header-height: 73px;
+
+  accent-color: var(--color-accent);
+  color-scheme: light dark;
+
+  &[data-theme="light"] {
+    color-scheme: light;
+  }
+
+  &[data-theme="dark"] {
+    color-scheme: dark;
+  }
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: 'Local Noto Sans JP';
+  src:
+    /* Windows用 */
+    local('Noto Sans JP'),
+    /* Android用 */
+    local('Noto Sans CJK JP Regular');
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  font-family: "Local Noto Sans JP", "Noto Sans JP", sans-serif;
+  line-height: 1.75;
+}
+
+main {
+  padding-top: var(--header-height);
+}
+
+a {
+  color: var(--color-accent);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  display: block;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+address {
+  font-style: normal;
+}
+
+/* layout */
+
+.container {
+  box-sizing: content-box;
+  max-width: 60rem;
+  margin: auto;
+  padding: 0 1rem;
+}
+
+.container--small {
+  max-width: 45rem;
+}
+
+/* Utilities */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

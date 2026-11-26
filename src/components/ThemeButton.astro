@@ -1,0 +1,68 @@
+---
+import Button from "./Button.astro";
+import Icon from "./Icon.astro";
+---
+
+<Button icon tooltip="ダークモードにする" aria-pressed="false" id="mode-button">
+  <span class="light"><Icon icon="sun" /></span>
+  <span class="dark"><Icon icon="moon" /></span>
+</Button>
+
+<style>
+  button[aria-pressed="false"] .light {
+    display: none;
+  }
+
+  button[aria-pressed="true"] .dark {
+    display: none;
+  }
+</style>
+
+<script>
+  const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const getTheme = (): string => {
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      return storedTheme;
+    }
+    return darkModeMediaQuery.matches ? "dark" : "light";
+  };
+
+  const setTheme = (theme: string, doc: Document) => {
+    const isDark = theme === "dark";
+
+    localStorage.setItem("theme", theme);
+    doc.documentElement.dataset.theme = theme;
+
+    const modeButton = doc.getElementById("mode-button")!;
+    modeButton.setAttribute("aria-pressed", String(isDark));
+
+    const modeButtonText = modeButton.querySelector(".tooltip")!;
+    modeButtonText.textContent = isDark
+      ? "ライトモードにする"
+      : "ダークモードにする";
+  };
+
+  setTheme(getTheme(), document);
+  document.addEventListener("astro:before-swap", (event) => {
+    setTheme(getTheme(), event.newDocument);
+  });
+
+  darkModeMediaQuery.addEventListener("change", (event) => {
+    const newTheme = event.matches ? "dark" : "light";
+    setTheme(newTheme, document);
+  });
+
+  const initButton = () => {
+    const modeButton = document.getElementById("mode-button")!;
+    modeButton.addEventListener("click", () => {
+      const currentTheme = getTheme();
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+      setTheme(newTheme, document);
+    });
+  };
+
+  initButton();
+  document.addEventListener("astro:after-swap", initButton);
+</script>

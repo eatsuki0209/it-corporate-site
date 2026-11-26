@@ -1,0 +1,263 @@
+---
+import HeroBackground1 from "@/assets/hero-background1.jpg";
+import HeroBackground2 from "@/assets/hero-background2.jpg";
+import HeroBackground3 from "@/assets/hero-background3.jpg";
+import { Image } from "astro:assets";
+---
+
+<div class="hero">
+  <div class="background">
+    <Image src={HeroBackground1} alt="" class="slide current" />
+    <Image src={HeroBackground2} alt="" class="slide next" />
+    <Image src={HeroBackground3} alt="" class="slide" />
+  </div>
+
+  <div class="container">
+    <div class="inner">
+      <p class="hero-text">
+        <span><span>未来を、</span></span>
+        <span><span>もっとシンプルに。</span></span>
+      </p>
+
+      <div class="hero-bottom">
+        <p class="hero-sub-text">変化に強いビジネス基盤を構築します。</p>
+        <p>
+          私たちは、業界における長年の経験と確かな技術で、お客様の課題を本質から解決します。
+        </p>
+        <div class="hero-arrow-container">
+          <div id="hero-arrow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero {
+    position: relative;
+    margin-top: calc(var(--header-height) * -1);
+    padding-top: var(--header-height);
+    background-image: linear-gradient(
+      to top,
+      var(--color-background),
+      transparent
+    );
+  }
+
+  .background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0.5;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    &.current {
+      z-index: 2;
+      animation: zoomAnimation 6s linear both;
+    }
+
+    &.next {
+      z-index: 1;
+    }
+  }
+
+  @keyframes zoomAnimation {
+    0% {
+      opacity: 1;
+      scale: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      scale: 1.15;
+    }
+  }
+
+  .inner {
+    display: grid;
+    gap: 3rem;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .hero-bottom {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .hero-text {
+    font-size: var(--heading-xl);
+    line-height: 1.5;
+
+    > span {
+      display: block;
+
+      > span {
+        border-inline-end: 2px solid transparent;
+        transition: all 75ms ease-out;
+
+        &.typing {
+          border-inline-end-color: currentColor;
+          transition-duration: 0ms;
+        }
+      }
+    }
+  }
+
+  .hero-sub-text {
+    font-size: clamp(1.5rem, 1.167rem + 1.67vw, 2.5rem);
+  }
+
+  .hero-arrow-container {
+    display: grid;
+    place-items: center;
+
+    #hero-arrow {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      animation: arrow-move 3s ease-in-out infinite;
+
+      &::before,
+      &::after {
+        position: absolute;
+        content: "";
+        top: 60%;
+        width: 50%;
+        height: 3px;
+        background-color: currentColor;
+      }
+
+      &::before {
+        left: 0;
+        rotate: 30deg;
+        transform-origin: bottom right;
+      }
+
+      &::after {
+        right: 0;
+        rotate: -30deg;
+        transform-origin: bottom left;
+      }
+    }
+  }
+
+  @keyframes arrow-move {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    33% {
+      opacity: 1;
+    }
+
+    66%,
+    100% {
+      opacity: 0;
+      translate: 0 2rem;
+    }
+  }
+</style>
+
+<script>
+  let slideInterval: NodeJS.Timeout | null;
+
+  document.addEventListener("astro:page-load", () => {
+    const slides = document.querySelectorAll(".slide");
+    if (slides.length === 0) return;
+
+    let currentIndex = 0;
+
+    function nextSlide() {
+      const previousIndex = (currentIndex - 1 + slides.length) % slides.length;
+      const previous = slides[previousIndex];
+      const current = slides[currentIndex];
+      currentIndex = (currentIndex + 1) % slides.length;
+      const next = slides[currentIndex];
+
+      previous.classList.remove("current");
+
+      current.classList.remove("next");
+      current.classList.add("current");
+
+      next.classList.add("next");
+    }
+
+    nextSlide();
+    if (slideInterval) clearInterval(slideInterval);
+    slideInterval = setInterval(nextSlide, 6000);
+
+    const hero = document.querySelector(".hero")!;
+    const heroTextRows = document.querySelectorAll(".hero-text span span")!;
+    const heroBottom = document.querySelector(".hero-bottom")!;
+    const heroArrow = document.getElementById("hero-arrow")!;
+
+    let heroDelay = 75;
+    const heroDuration = 1000;
+
+    if (!hero || window.scrollY !== 0) {
+      return;
+    }
+
+    heroTextRows.forEach((heroTextRow) => {
+      const text = heroTextRow.textContent;
+      heroTextRow.textContent = "";
+
+      setTimeout(() => {
+        heroTextRow.classList.add("typing");
+      }, heroDelay);
+
+      [...text].forEach((char) => {
+        setTimeout(() => {
+          heroTextRow.textContent += char;
+        }, heroDelay);
+
+        heroDelay += 75;
+      });
+
+      heroDelay += 225;
+
+      setTimeout(() => {
+        heroTextRow.classList.remove("typing");
+      }, heroDelay);
+    });
+
+    heroBottom.animate(
+      {
+        offset: 0,
+        translate: "0 1rem",
+        opacity: 0,
+      },
+      {
+        duration: heroDuration,
+        delay: heroDelay,
+        fill: "backwards",
+        easing: "ease-out",
+      },
+    );
+
+    heroArrow.style.animationPlayState = "paused";
+    setTimeout(() => {
+      heroArrow.style.animationPlayState = "running";
+    }, heroDelay + heroDuration);
+  });
+
+  document.addEventListener("astro:before-preparation", () => {
+    if (slideInterval) {
+      clearInterval(slideInterval);
+      slideInterval = null;
+    }
+  });
+</script>

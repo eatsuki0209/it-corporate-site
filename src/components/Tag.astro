@@ -1,0 +1,33 @@
+---
+import Button from "./Button.astro";
+
+interface Props {
+  tag: string;
+  href: string;
+  selected?: boolean;
+}
+
+const { tag, href, selected } = Astro.props;
+---
+
+<Button class:list={["tag", { selected: selected }]} href={href}>{tag}</Button>
+
+<style>
+  .tag {
+    position: relative;
+    z-index: 1;
+    display: inline grid;
+    place-content: center;
+    height: 32px;
+    padding: 0 1rem;
+    border-radius: 1000px;
+    background-color: rgb(from currentcolor r g b / 8%);
+    color: var(--color-accent);
+    font-weight: normal;
+
+    &.selected {
+      background-color: var(--color-accent);
+      color: var(--color-on-accent);
+    }
+  }
+</style>

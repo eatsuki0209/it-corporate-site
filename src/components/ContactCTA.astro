@@ -1,0 +1,115 @@
+---
+import Button from "./Button.astro";
+import Icon from "./Icon.astro";
+
+const slug = "/contact";
+---
+
+{
+  Astro.url.pathname !== slug && (
+    <aside>
+      <div class="container">
+        <div class="inner">
+          <div class="text">
+            <h2>
+              <>
+                <span>お問い合わせは</span>
+                <span>こちら</span>
+              </>
+            </h2>
+            <p>
+              <span>まずはお気軽にご相談ください。</span>
+              <span>専門のコンサルタントが貴社の現状をお伺いいたします。</span>
+            </p>
+          </div>
+
+          <div class="button">
+            <Button
+              size="large"
+              variant="primary"
+              href={slug}
+              id="contact-cta-button"
+            >
+              <Icon icon="envelope" size="2rem" />
+              お問い合わせ
+            </Button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  aside {
+    background-color: var(--color-background-variant);
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding: 5rem 0;
+  }
+
+  .text {
+    display: grid;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: var(--heading-l);
+    font-weight: 500;
+  }
+
+  span {
+    display: inline-block;
+  }
+
+  @media screen and (min-width: 48rem) {
+    .inner {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0;
+      padding: 8rem 0;
+    }
+
+    .text {
+      display: grid;
+      gap: 1rem;
+      text-align: left;
+    }
+
+    p span {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const intersectionObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const target = entry.target;
+            target.classList.add("is-visible");
+            observer.unobserve(target);
+          }
+        });
+      },
+      {
+        threshold: 1,
+        // rootMargin: "-5% 0px",
+      },
+    );
+
+    const contactCtaButton = document.getElementById("contact-cta-button");
+    if (contactCtaButton) {
+      intersectionObserver.observe(contactCtaButton);
+    }
+  });
+</script>

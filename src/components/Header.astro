@@ -1,0 +1,148 @@
+---
+import Logo from "./Logo.astro";
+import Nav from "./Nav.astro";
+import ThemeButton from "./ThemeButton.astro";
+import MenuButton from "./MenuButton.astro";
+---
+
+<header id="header">
+  <div class="container">
+    <div class="inner">
+      <div class="start">
+        <Logo color />
+        <MenuButton />
+      </div>
+
+      <div class="end" id="header-end">
+        <Nav />
+        <ThemeButton />
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<style>
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    padding: 0.5rem 0;
+    /* overflow: hidden; */
+    border-bottom: 1px solid transparent;
+    transition: all 300ms ease-out;
+
+    &.scrolled,
+    &.expanded {
+      background-color: var(--color-header);
+      border-bottom-color: var(--color-outline-variant);
+    }
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .end {
+    display: flex;
+    flex-direction: column;
+    height: 0;
+    content-visibility: hidden;
+    overflow: hidden;
+    interpolate-size: allow-keywords;
+    transition:
+      height 300ms ease-out,
+      content-visibility 300ms ease-out allow-discrete;
+
+    header.expanded & {
+      height: fit-content;
+      content-visibility: visible;
+    }
+
+    .button {
+      justify-content: start;
+    }
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: black;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 300ms ease-out,
+      visibility 300ms ease-out;
+
+    header.expanded + & {
+      opacity: 0.5;
+      visibility: visible;
+    }
+  }
+
+  @media screen and (min-width: 56rem) {
+    .inner {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .end {
+      display: flex;
+      flex-direction: row;
+      height: auto;
+      content-visibility: visible;
+      overflow: visible;
+      transition: none;
+
+      .button {
+        justify-content: center;
+      }
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const header = document.getElementById("header")!;
+    const scrollThreshold = header.offsetHeight;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+
+      if (scrollPosition > scrollThreshold) {
+        header.classList.add("scrolled");
+      } else {
+        header.classList.remove("scrolled");
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+
+    const modeButton = document.getElementById("mode-button")!;
+    const handleViewports = (event: MediaQueryList | MediaQueryListEvent) => {
+      if (event.matches) {
+        modeButton.classList.add("icon");
+      } else {
+        modeButton.classList.remove("icon");
+      }
+    };
+    const mediaQueryList = window.matchMedia("screen and (min-width: 56rem)");
+    handleViewports(mediaQueryList);
+    mediaQueryList.addEventListener("change", handleViewports);
+  });
+</script>

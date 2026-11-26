@@ -1,0 +1,126 @@
+---
+import { getCollection } from "astro:content";
+import type { GetStaticPathsOptions } from "astro";
+
+import PageLayout from "@/layouts/PageLayout.astro";
+import Tag from "@/components/Tag.astro";
+import Grid from "@/components/Grid.astro";
+import WorkPreview from "@/components/WorkPreview.astro";
+import Pagination from "@/components/Pagination.astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const allPosts = (await getCollection("work")).sort(
+    (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf(),
+  );
+
+  const uniqueTags = [
+    ...new Set(allPosts.map((post) => post.data.tags).flat()),
+  ];
+
+  return uniqueTags.flatMap((tag) => {
+    const filteredPosts = allPosts.filter((post) =>
+      post.data.tags.includes(tag),
+    );
+    return paginate(filteredPosts, {
+      pageSize: 10,
+      params: { tag },
+      props: { uniqueTags },
+    });
+  });
+}
+
+const { tag } = Astro.params;
+const { page, uniqueTags } = Astro.props;
+
+const title = "実績";
+const caption = "Works";
+const description =
+  "株式会社プレースホルダーによるDX支援・システム開発の導入事例をご紹介します。多種多様な業界での課題解決プロセスと、テクノロジーがもたらした具体的な成果を掲載しています。";
+---
+
+<PageLayout title={title} caption={caption} description={description}>
+  <div class="content">
+    <div class="sidebar">
+      <div class="sidebar-content">
+        <h3>カテゴリー</h3>
+
+        <ul class="tags">
+          <li>
+            <Tag tag="全て" href="/works" />
+          </li>
+          {
+            uniqueTags.map((uniqueTag) => (
+              <li>
+                <Tag
+                  tag={uniqueTag}
+                  href={`/works/tags/${uniqueTag}`}
+                  selected={uniqueTag === tag}
+                />
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="main">
+      <Grid>
+        {
+          page.data.map((post) => (
+            <li>
+              <WorkPreview post={post} />
+            </li>
+          ))
+        }
+      </Grid>
+
+      <Pagination page={page} baseUrl=`/works/tags/${tag}` />
+    </div>
+  </div>
+</PageLayout>
+
+<style>
+  .content {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .tags {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    /* justify-content: center; */
+    gap: 0.5rem;
+  }
+
+  .sidebar-content {
+    display: grid;
+    gap: 1rem;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .main {
+    display: grid;
+    gap: 3rem;
+  }
+
+  @media screen and (min-width: 48rem) {
+    .content {
+      grid-template-columns: 200px 1fr;
+    }
+
+    .sidebar-content {
+      position: sticky;
+      top: var(--header-height);
+      padding: 1rem 0;
+    }
+
+    .tags {
+      flex-direction: column;
+    }
+  }
+</style>

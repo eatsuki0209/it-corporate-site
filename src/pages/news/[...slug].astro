@@ -1,0 +1,40 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+
+import ArticleLayout from "@/layouts/ArticleLayout.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+
+interface Props {
+  entry: CollectionEntry<"news">;
+}
+
+export async function getStaticPaths() {
+  const entries = await getCollection("news");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<ArticleLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  backLabel="お知らせ"
+  backHref="/news"
+>
+  <div class="header">
+    <h1>{entry.data.title}</h1>
+
+    <div class="meta">
+      <p class="date">
+        <FormattedDate date={entry.data.publishDate} />
+      </p>
+    </div>
+  </div>
+
+  <Content />
+</ArticleLayout>

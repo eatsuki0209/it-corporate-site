@@ -1,0 +1,68 @@
+---
+import { NAV_LINKS } from "@/consts";
+import Button from "./Button.astro";
+
+const isCurrentPage = (href: string) => {
+  let pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, "");
+  if (pathname.at(0) !== "/") pathname = "/" + pathname;
+  if (pathname.at(-1) !== "/") pathname += "/";
+  return pathname === href || (href !== "/" && pathname.startsWith(href));
+};
+---
+
+<nav>
+  <ul>
+    {
+      NAV_LINKS.map(({ href, label }) => (
+        <li>
+          <Button
+            aria-current={isCurrentPage(href) ? "page" : null}
+            href={href}
+          >
+            {isCurrentPage(href) && <div class="current-indicator" />}
+            {label}
+          </Button>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-outline-variant);
+    margin-bottom: 0.5rem;
+  }
+
+  .current-indicator {
+    position: absolute;
+    left: 0;
+    bottom: 50%;
+    translate: 0 50%;
+    width: 4px;
+    height: 24px;
+    border-radius: 2px;
+    background-color: var(--color-accent);
+  }
+
+  @media screen and (min-width: 56rem) {
+    ul {
+      flex-direction: row;
+      padding: 0;
+      border-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .current-indicator {
+      left: 50%;
+      bottom: 0;
+      translate: -50% 0;
+      width: 24px;
+      height: 4px;
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import { getCollection } from "astro:content";
+
+import PageLayout from "@/layouts/PageLayout.astro";
+import Button from "@/components/Button.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+
+const posts = (await getCollection("news")).sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf(),
+);
+
+const title = "お知らせ";
+const caption = "News";
+const description =
+  "株式会社プレースホルダーの最新ニュースやプレスリリース。サービス更新情報、事例紹介の追加、ITトレンドに関するコラムなど、当社の活動に関する情報を随時発信しています。";
+---
+
+<PageLayout title={title} caption={caption} description={description}>
+  <ul>
+    {
+      posts.map((post) => (
+        <li>
+          <Button class="link" href={`/news/${post.id}`}>
+            <FormattedDate date={post.data.publishDate} />
+            <span>{post.data.title}</span>
+          </Button>
+        </li>
+      ))
+    }
+  </ul>
+</PageLayout>
+
+<style>
+  ul {
+    list-style-type: none;
+    display: grid;
+    row-gap: 0.25rem;
+  }
+
+  li {
+    display: contents;
+  }
+
+  li:not(:last-child)::after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 100%;
+    background-color: var(--color-outline-variant);
+  }
+
+  .link {
+    display: grid;
+    justify-content: start;
+    gap: 0.5rem;
+    padding: 1rem;
+    height: auto;
+  }
+
+  span {
+    color: var(--color-on-background);
+  }
+
+  @media (min-width: 48rem) {
+    ul {
+      grid-template-columns: auto 1fr;
+      column-gap: 2rem;
+    }
+
+    li:not(:last-child)::after {
+      grid-column: span 2;
+    }
+
+    .link {
+      grid-column: span 2;
+      grid-template-columns: subgrid;
+      gap: unset;
+    }
+  }
+</style>

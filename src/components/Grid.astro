@@ -1,0 +1,35 @@
+---
+interface Props {
+  spacious?: boolean;
+}
+
+const { spacious = false } = Astro.props;
+---
+
+<ul class:list={["grid", { spacious: spacious }]}>
+  <slot />
+</ul>
+
+<style>
+  .grid {
+    --repeat: auto-fill;
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(var(--repeat), minmax(16rem, 1fr));
+    gap: 2rem;
+  }
+
+  .grid > :global(li) {
+    display: contents;
+  }
+
+  .grid.spacious {
+    --repeat: 1;
+  }
+
+  @media screen and (min-width: 48rem) {
+    .grid.spacious {
+      --repeat: 2;
+    }
+  }
+</style>

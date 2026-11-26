@@ -1,0 +1,207 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import Button from "./Button.astro";
+
+interface Props {
+  post: CollectionEntry<"service">;
+}
+
+const { post } = Astro.props;
+---
+
+<section class="service">
+  <p class="point">{`0${post.data.number}`}</p>
+
+  <div class="image" id="service-image">
+    <Image src={post.data.image} alt="" />
+  </div>
+
+  <div class="text">
+    <h3 class="title"><span>{post.data.title}</span></h3>
+
+    <p class="description"><span>{post.data.description}</span></p>
+
+    <div class="service-button">
+      <Button variant="filled" href={`/services/${post.id}`}>
+        詳細を見る
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    display: grid;
+    gap: 1rem;
+    gap: 1.5rem;
+  }
+
+  .point {
+    z-index: 100;
+    display: grid;
+    place-content: center;
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 1rem -4rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-small);
+    background-color: var(--color-on-background-variant);
+    color: var(--color-background);
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .is-visible .point span::after {
+    width: 100%;
+  }
+
+  .image {
+    position: relative;
+    border-radius: var(--radius-small);
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 8 / 5;
+      object-fit: cover;
+    }
+  }
+
+  .image::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-background-subtle);
+    width: 100%;
+    height: 100%;
+    transition: width 600ms ease-out 0ms;
+  }
+
+  .is-visible .image::after {
+    width: 0;
+  }
+
+  .text {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: var(--heading-s);
+    font-weight: 500;
+    line-height: 1.5;
+
+    span {
+      background-image: linear-gradient(var(--color-on-background));
+      background-size: 0% 100%;
+      background-repeat: no-repeat;
+      background-clip: text;
+      color: transparent;
+
+      transition: background-size 600ms ease-out 0ms;
+
+      .is-visible & {
+        background-size: 100% 100%;
+      }
+    }
+  }
+
+  .description {
+    span {
+      background-image: linear-gradient(var(--color-on-background-variant));
+      background-size: 0% 100%;
+      background-repeat: no-repeat;
+      background-clip: text;
+      color: transparent;
+
+      transition: background-size 600ms ease-out 300ms;
+
+      .is-visible & {
+        background-size: 100% 100%;
+      }
+    }
+  }
+
+  .service-button {
+    display: flex;
+    justify-content: end;
+    padding-top: 1rem;
+    margin-top: auto;
+  }
+
+  @media screen and (min-width: 48rem) {
+    section {
+      display: grid;
+      grid-template-areas:
+        "image point"
+        "image text";
+      grid-template-rows: auto 1fr;
+      grid-template-columns: 45% 50%;
+      /* align-items: center; */
+      column-gap: 5%;
+      row-gap: 1rem;
+
+      &:nth-of-type(even) {
+        grid-template-areas:
+          "point image"
+          "text image";
+        grid-template-columns: 50% 45%;
+      }
+    }
+
+    .inner {
+      flex-direction: row;
+
+      section:nth-child(even) & {
+        flex-direction: row-reverse;
+      }
+    }
+
+    .image {
+      grid-area: image;
+
+      img {
+        aspect-ratio: 7 / 5;
+      }
+    }
+
+    .point {
+      grid-area: point;
+      margin: 0;
+    }
+
+    .text {
+      grid-area: text;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const intersectionObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const target = entry.target;
+            target.classList.add("is-visible");
+            observer.unobserve(target);
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+      },
+    );
+
+    const services = document.querySelectorAll(".service");
+    services.forEach((service) => {
+      intersectionObserver.observe(service);
+    });
+  });
+</script>

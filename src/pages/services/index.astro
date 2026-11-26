@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+
+import PageLayout from "@/layouts/PageLayout.astro";
+import ServicePreview from "@/components/ServicePreview.astro";
+
+const posts = (await getCollection("service")).sort(
+  (a, b) => a.data.number - b.data.number,
+);
+
+const title = "サービス";
+const caption = "Services";
+const description =
+  "株式会社プレースホルダーの提供サービス。DX戦略の立案からシステム開発、運用保守まで、経営課題をITの力で一気通貫に解決し、貴社の持続的な成長を支援します。";
+---
+
+<PageLayout title={title} caption={caption} description={description}>
+  <div class="services">
+    {posts.map((post) => <ServicePreview post={post} />)}
+  </div>
+</PageLayout>
+
+<style>
+  .services {
+    display: grid;
+    gap: 8rem;
+  }
+</style>

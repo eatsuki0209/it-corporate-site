@@ -1,0 +1,211 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import Button from "@/components/Button.astro";
+
+const title = "お問い合わせ";
+const caption = "Contact";
+const description =
+  "DX推進やシステム構築に関するご相談・お見積りはこちら。漠然とした課題のご相談も歓迎です。専門コンサルタントが貴社に最適な解決策をご提案します。";
+---
+
+<PageLayout title={title} caption={caption} description={description}>
+  <form action="#">
+    <div>
+      <p>お仕事のご相談やお見積りなどお気軽にお問い合わせください。</p>
+
+      <p>担当者よりメールにて折り返しご連絡を差し上げます。</p>
+    </div>
+
+    <label>
+      <p class="heading">
+        <span class="subtitle">お名前</span>
+        <span class="required-text">必須</span>
+      </p>
+      <input class="text-field" type="text" name="name" required />
+      <p class="error-message"></p>
+    </label>
+
+    <label>
+      <p class="heading">
+        <span class="subtitle">会社名</span>
+        <span class="required-text">必須</span>
+      </p>
+      <input class="text-field" type="text" name="company" required />
+      <p class="error-message"></p>
+    </label>
+
+    <label>
+      <p class="heading">
+        <span class="subtitle">部署名</span>
+      </p>
+      <input class="text-field" type="text" name="department" />
+      <p class="error-message"></p>
+    </label>
+
+    <label>
+      <p class="heading">
+        <span class="subtitle">メールアドレス</span>
+        <span class="required-text">必須</span>
+      </p>
+      <input class="text-field" type="email" name="email" required />
+      <p class="error-message"></p>
+    </label>
+
+    <div class="fieldset">
+      <fieldset>
+        <legend class="heading">
+          <span class="subtitle">お問い合わせ種別</span>
+          <span class="required-text">必須</span>
+        </legend>
+
+        <label>
+          <input type="radio" name="message-type" value="a" required />
+          <p>DX支援・コンサルティングについて</p>
+        </label>
+
+        <label>
+          <input type="radio" name="message-type" value="b" required />
+          <p>システム開発・導入のご相談</p>
+        </label>
+
+        <label>
+          <input type="radio" name="message-type" value="c" required />
+          <p>運用保守・アウトソーシングについて</p>
+        </label>
+
+        <label>
+          <input type="radio" name="message-type" value="d" required />
+          <p>採用・パートナーシップについて</p>
+        </label>
+
+        <label>
+          <input type="radio" name="message-type" value="e" required />
+          <p>その他</p>
+        </label>
+      </fieldset>
+    </div>
+
+    <label>
+      <p class="heading">
+        <span class="subtitle">お問い合わせ内容</span>
+        <span class="required-text">必須</span>
+      </p>
+      <textarea class="text-field" name="message" rows="5" required></textarea>
+      <p class="error-message"></p>
+    </label>
+
+    <label>
+      <input type="checkbox" name="policy" required />
+      <p class="heading">
+        <span>
+          <a target="_blank" href="/privacy-policy">個人情報の取り扱い</a
+          >に同意する
+        </span>
+        <span class="required-text">必須</span>
+      </p>
+    </label>
+
+    <div class="submit-button">
+      <Button variant="primary">送信する</Button>
+    </div>
+  </form>
+</PageLayout>
+
+<style>
+  form {
+    display: grid;
+    gap: 2.5rem;
+    width: 100%;
+    max-width: 40rem;
+    margin: auto;
+  }
+
+  .fieldset {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  fieldset {
+    display: contents;
+    border: 0;
+  }
+
+  label {
+    display: grid;
+    gap: 0.5rem;
+
+    &:has([type="checkbox"], [type="radio"]) {
+      display: flex;
+    }
+  }
+
+  .heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .text-field {
+    padding: 1rem;
+    border: 1px solid var(--color-outline);
+    border-radius: var(--radius-small);
+    background-color: var(--color-text-field);
+
+    &:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: -2px;
+    }
+
+    &:user-invalid {
+      border-color: var(--color-error);
+      outline-color: var(--color-error);
+    }
+  }
+
+  .subtitle {
+    font-weight: bold;
+  }
+
+  .required-text {
+    place-content: center;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--color-error);
+    border-radius: 1000px;
+    color: var(--color-error);
+    font-size: 0.75rem;
+  }
+
+  .error-message {
+    display: none;
+    color: var(--color-error);
+    font-size: 0.875rem;
+
+    :user-invalid ~ & {
+      display: block;
+    }
+  }
+
+  .submit-button {
+    display: flex;
+    justify-content: end;
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const inputs = document.querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement
+    >(".text-field");
+
+    ["input", "invalid"].forEach((eventType) => {
+      inputs.forEach((input) => {
+        input.addEventListener(eventType, () => {
+          const errorMessage = input.nextElementSibling;
+          if (errorMessage instanceof HTMLElement) {
+            errorMessage.textContent = input.validationMessage;
+          }
+        });
+      });
+    });
+  });
+</script>

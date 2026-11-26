@@ -1,0 +1,258 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+import Icon from "./Icon.astro";
+
+interface Props extends HTMLAttributes<"a" | "button"> {
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  class?: string;
+  tooltip?: string;
+  size?: "small" | "normal" | "large";
+  variant?: "outlined" | "filled" | "primary";
+  icon?: boolean;
+  small?: boolean;
+  hasPrev?: boolean;
+  hasNext?: boolean;
+  disabled?: boolean;
+}
+
+const {
+  href,
+  type = "submit",
+  class: className,
+  tooltip,
+  size,
+  variant,
+  icon = false,
+  small = false,
+  hasPrev = false,
+  hasNext = false,
+  disabled,
+  ...props
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  {href}
+  type={Tag === "button" ? type : undefined}
+  class:list={["button", className, { icon: icon }, size, variant]}
+  disabled={disabled}
+  {...props}
+>
+  <div class="overlay"></div>
+
+  {
+    hasPrev && (
+      <div class="arrow-prev">
+        <Icon icon="arrow-prev" />
+      </div>
+    )
+  }
+
+  <slot />
+
+  {
+    hasNext && (
+      <div class="arrow-next">
+        <Icon icon="arrow-next" />
+      </div>
+    )
+  }
+
+  {tooltip && <p class="tooltip">{tooltip}</p>}
+</Tag>
+
+<style>
+  @keyframes move-overlay {
+    0% {
+      translate: -100% 0%;
+    }
+
+    100% {
+      translate: 0% 0%;
+    }
+  }
+
+  @keyframes button-is-visible {
+    0% {
+      translate: -100% 0%;
+      opacity: 0.12;
+    }
+
+    50% {
+      translate: 0% 0%;
+      opacity: 0.12;
+    }
+
+    100% {
+      translate: 0% 0%;
+      opacity: 0;
+    }
+  }
+
+  .button {
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    height: 56px;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--radius-medium);
+    background-color: transparent;
+    color: var(--color-on-background-variant);
+    text-decoration: none;
+    font-weight: 500;
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: inherit;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        left: -14px;
+        width: calc(100% + 28px);
+        background-color: currentColor;
+        opacity: 0;
+        transform: skewX(155deg);
+        transition: all 200ms ease-out;
+      }
+    }
+
+    &:hover {
+      .overlay::before {
+        animation: move-overlay 200ms ease-out both;
+        opacity: 0.12;
+        transition-duration: 0ms;
+      }
+    }
+
+    &:active {
+      .overlay::before {
+        opacity: 0.2;
+      }
+    }
+
+    &.is-visible {
+      .overlay::after {
+        animation: button-is-visible 800ms ease-out both;
+      }
+    }
+
+    &.large {
+      padding: 3rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  .icon {
+    padding: 0;
+    width: 56px;
+  }
+
+  .outlined {
+    padding-inline: 1.5rem;
+    border: 1px solid var(--color-outline);
+    color: var(--color-on-background);
+  }
+
+  .filled {
+    padding-inline: 1.5rem;
+    background-color: var(--color-background-variant);
+    color: var(--color-on-background);
+    transition: box-shadow 200ms ease-out;
+  }
+
+  @property --percentage {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+  }
+
+  .primary {
+    padding-inline: 1.5rem;
+    box-shadow: var(--shadow-2);
+    background-color: var(--color-accent);
+    background-image: linear-gradient(
+      155deg,
+      rgb(from var(--color-accent-variant) r g b / 0%),
+      rgb(from var(--color-accent-variant) r g b / var(--percentage))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: 0 0;
+    color: var(--color-on-accent);
+    transition:
+      box-shadow 200ms ease-out,
+      --percentage 800ms ease-out;
+
+    &:hover {
+      box-shadow: var(--shadow-3);
+    }
+
+    &.is-visible {
+      --percentage: 100%;
+    }
+
+    &:disabled {
+      box-shadow: none;
+      background-color: rgb(from var(--color-on-background) r g b / 10%);
+      background-image: none;
+      color: rgb(from var(--color-on-background) r g b / 50%);
+    }
+  }
+
+  .arrow-prev {
+    transition: translate 200ms ease-out;
+
+    .button:hover & {
+      translate: -4px 0;
+    }
+  }
+
+  .arrow-next {
+    position: absolute;
+    right: 1rem;
+    transition: translate 200ms ease-out;
+
+    .button:hover & {
+      translate: 4px 0;
+    }
+  }
+
+  .icon .tooltip {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    bottom: -24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: var(--radius-small);
+    background-color: var(--color-tooltip);
+    color: var(--color-on-tooltip);
+    font-size: 0.75rem;
+    text-wrap: nowrap;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 200ms ease-out;
+    transition-property: visibility, opacity, translate;
+
+    .button:hover & {
+      visibility: visible;
+      opacity: 1;
+      translate: 0 8px;
+      transition-delay: 500ms;
+    }
+  }
+</style>

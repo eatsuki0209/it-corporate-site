@@ -1,0 +1,102 @@
+---
+import type { Page } from "astro";
+
+import Icon from "./Icon.astro";
+
+interface Props {
+  page: Page;
+  baseUrl: string;
+}
+
+const { page, baseUrl } = Astro.props;
+
+const totalPages = page.lastPage;
+
+const pageNumbers = Array.from({ length: totalPages }, (_, i) => {
+  return i + 1;
+});
+
+const getPageUrl = (pageNumber: number) => {
+  return pageNumber === 1 ? baseUrl : `${baseUrl}/${pageNumber}`;
+};
+---
+
+<nav aria-label="pagination">
+  <ul>
+    <li>
+      <a href={page.url.prev} aria-disabled={page.url.prev ? "false" : "true"}>
+        <Icon icon="arrow-prev-small" />
+        <span class="sr-only">前のページ</span>
+      </a>
+    </li>
+
+    {
+      pageNumbers.map((pageNumber) => (
+        <li>
+          <a
+            href={getPageUrl(pageNumber)}
+            aria-current={page.currentPage === pageNumber && "page"}
+          >
+            <span>{pageNumber}</span>
+            <span class="sr-only">ページ目</span>
+          </a>
+        </li>
+      ))
+    }
+
+    <li>
+      <a href={page.url.next} aria-disabled={page.url.next ? "false" : "true"}>
+        <Icon icon="arrow-next-small" />
+        <span class="sr-only">次のページ</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  a {
+    position: relative;
+    display: grid;
+    place-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    text-decoration: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: currentColor;
+      opacity: 0;
+      transition: opacity 150ms ease-out;
+    }
+
+    &[href] {
+      color: var(--color-accent);
+
+      &:hover::before {
+        opacity: 0.08;
+      }
+    }
+
+    &[aria-disabled="true"] {
+      color: var(--color-on-background);
+      opacity: 0.5;
+    }
+
+    &[aria-current="page"] {
+      background-color: var(--color-accent);
+      color: var(--color-on-accent);
+    }
+  }
+</style>

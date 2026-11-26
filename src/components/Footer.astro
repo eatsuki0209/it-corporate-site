@@ -1,0 +1,111 @@
+---
+import { NAV_LINKS } from "@/consts";
+import Logo from "./Logo.astro";
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer>
+  <div class="container">
+    <div class="inner">
+      <div class="main">
+        <div class="about">
+          <Logo />
+
+          <address>
+            <p>〒100-0001</p>
+            <p>東京都千代田区〇〇 1-2-3</p>
+          </address>
+        </div>
+
+        <nav>
+          <ul class="nav-list">
+            {
+              NAV_LINKS.map(({ href, label }) => (
+                <li>
+                  <a class="nav-link" href={href}>
+                    {label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <p class="copyright">
+        <small>
+          &copy; {currentYear} 株式会社プレースホルダー All Rights Reserved.
+        </small>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background-color: var(--color-footer);
+    color: var(--color-on-footer);
+  }
+
+  .main {
+    display: grid;
+    gap: 3rem;
+    padding: 4rem 0;
+  }
+
+  .about {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .nav-list {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    display: inline-block;
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 1px;
+      background-color: currentColor;
+      transition: width 200ms ease-out;
+    }
+
+    &:hover::after {
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  .copyright {
+    padding: 1rem 0;
+    text-align: center;
+    border-top: 1px solid rgb(from currentColor r g b / 50%);
+  }
+
+  @media screen and (min-width: 48rem) {
+    .main {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      gap: 0;
+    }
+
+    .nav-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+</style>

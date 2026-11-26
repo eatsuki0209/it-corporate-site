@@ -1,0 +1,92 @@
+---
+import Button from "./Button.astro";
+---
+
+<Button
+  aria-expanded="false"
+  aria-controls="header-end"
+  icon
+  tooltip="メニューを開く"
+  id="menu-button"
+>
+  <div class="menu-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</Button>
+
+<style>
+  .menu-icon {
+    display: grid;
+    place-content: center;
+    gap: 4px;
+    width: 24px;
+    height: 24px;
+
+    span {
+      height: 2px;
+      width: 20px;
+      background-color: currentColor;
+      transition: all 300ms ease-out;
+
+      button[aria-expanded="true"] & {
+        &:nth-child(1) {
+          translate: 0 6px;
+          rotate: 135deg;
+        }
+
+        &:nth-child(2) {
+          rotate: y 90deg;
+          rotate: 270deg;
+          opacity: 0;
+        }
+
+        &:nth-child(3) {
+          translate: 0 -6px;
+          rotate: 225deg;
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 56rem) {
+    #menu-button {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const header = document.getElementById("header")!;
+    const overlay = document.getElementById("overlay")!;
+    const menuButton = document.getElementById("menu-button")!;
+    const menuButtonText = menuButton.querySelector(".tooltip")!;
+
+    const setExpanded = (expand: boolean) => {
+      header.classList[expand ? "add" : "remove"]("expanded");
+      menuButton.setAttribute("aria-expanded", expand ? "true" : "false");
+      menuButtonText.textContent = expand
+        ? "メニューを閉じる"
+        : "メニューを開く";
+    };
+
+    menuButton.addEventListener("click", () => {
+      const isExpanded = menuButton.getAttribute("aria-expanded") === "true";
+      setExpanded(!isExpanded);
+    });
+
+    overlay.addEventListener("click", () => {
+      const isExpanded = menuButton.getAttribute("aria-expanded") === "true";
+      setExpanded(!isExpanded);
+    });
+
+    const mediaQueryList = window.matchMedia("screen and (min-width: 56rem)");
+    mediaQueryList.addEventListener("change", (event) => {
+      if (event.matches) {
+        setExpanded(false);
+      }
+    });
+  });
+</script>

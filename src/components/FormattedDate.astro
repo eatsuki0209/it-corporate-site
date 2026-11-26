@@ -1,0 +1,24 @@
+---
+const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  weekday: "short",
+};
+
+interface Props {
+  date: Date;
+}
+
+const { date } = Astro.props;
+---
+
+<time datetime={date.toISOString().split("T")[0]}>
+  {date.toLocaleDateString("ja-JP", options)}
+</time>
+
+<style>
+  time {
+    color: var(--color-on-background-variant);
+  }
+</style>

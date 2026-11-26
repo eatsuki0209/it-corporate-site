@@ -1,0 +1,147 @@
+---
+import { getCollection } from "astro:content";
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Button from "@/components/Button.astro";
+import Grid from "@/components/Grid.astro";
+import Hero from "@/components/Hero.astro";
+import ServicePreview from "@/components/ServicePreview.astro";
+import WorkPreview from "@/components/WorkPreview.astro";
+
+const servicePosts = (await getCollection("service")).sort(
+  (a, b) => a.data.number - b.data.number,
+);
+
+const workPosts = (await getCollection("work"))
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 4);
+---
+
+<BaseLayout>
+  <Hero />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-content">
+        <h2 class="section-title"><span>サービス内容</span></h2>
+
+        <div class="service-list">
+          {servicePosts.map((post) => <ServicePreview post={post} />)}
+        </div>
+
+        <div class="section-button">
+          <Button variant="outlined" href="/services" hasNext>
+            サービス一覧を見る
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-content">
+        <h2 class="section-title"><span>導入事例</span></h2>
+
+        <Grid spacious>
+          {
+            workPosts.map((post) => (
+              <li>
+                <WorkPreview post={post} />
+              </li>
+            ))
+          }
+        </Grid>
+
+        <div class="section-button">
+          <Button variant="outlined" href="/works" hasNext>
+            実績一覧を見る
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section {
+    padding: 8rem 0;
+  }
+
+  .section-content {
+    display: grid;
+    gap: 4rem;
+  }
+
+  .section-title {
+    position: relative;
+    margin-block: 4rem;
+    padding: 2rem 0;
+    font-size: var(--heading-l);
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: 0.25rem;
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      translate: -50% 0;
+      height: 6px;
+      width: 100px;
+      background-color: var(--color-accent);
+    }
+
+    span {
+      display: block;
+      translate: 0 calc(100% + 2rem);
+      transition: translate 300ms ease-out;
+    }
+
+    &.is-visible {
+      span {
+        translate: 0 0;
+      }
+    }
+  }
+
+  .service-list {
+    display: grid;
+    gap: 6rem;
+  }
+
+  @media screen and (min-width: 48rem) {
+    .section-button {
+      max-width: 480px;
+      width: 100%;
+      margin: auto;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const intersectionObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const target = entry.target;
+            target.classList.add("is-visible");
+            observer.unobserve(target);
+          }
+        });
+      },
+      {
+        threshold: 1,
+        rootMargin: "-20% 0px",
+      },
+    );
+
+    const titles = document.querySelectorAll(".section-title");
+    titles.forEach((title) => {
+      intersectionObserver.observe(title);
+    });
+  });
+</script>
